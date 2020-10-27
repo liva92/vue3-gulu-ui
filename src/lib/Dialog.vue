@@ -1,27 +1,72 @@
 <template>
-<div class="gulu-dialog-overlay"></div>
-<div class="gulu-dialog-wrapper">
-    <div class="gulu-dialog">
-        <header>标题 <span class="gulu-dialog-close"></span></header>
-        <main>
-            <p>第一行字</p>
-            <p>第二行字</p>
-        </main>
-        <footer>
-            <Button level="main">OK</Button>
-            <Button>Cancel</Button>
-        </footer>
+<template v-if="visible">
+    <div class="gulu-dialog-overlay" @click="onClickOverlay"></div>
+    <div class="gulu-dialog-wrapper">
+        <div class="gulu-dialog">
+            <header>
+                标题
+                <span class="gulu-dialog-close" @click='close'></span>
+            </header>
+            <main>
+                <p>第一行字</p>
+                <p>第二行字</p>
+            </main>
+            <footer>
+                <Button level="main" @click="ok">OK</Button>
+                <Button @click="cancel">Cancel</Button>
+            </footer>
+        </div>
     </div>
-</div>
+</template>
 </template>
 
 <script lang="ts">
-import Button from './Button.vue'
+import Button from "./Button.vue";
 export default {
+    props: {
+        visible: {
+            type: Boolean,
+            default: false,
+        },
+        closeOnClickOverlay: {
+            type: Boolean,
+            default: true
+        },
+        ok: {
+            type: Function
+        },
+        cancel: {
+            type: Function
+        }
+    },
     components: {
-        Button
+        Button,
+    },
+    setup(props, context) {
+        const close = () => {
+            context.emit('update:visible', false)
+        }
+        const onClickOverlay = () => {
+            if (props.closeOnClickOverlay) {
+                close()
+            }
+        }
+        const ok = () => {
+            if (props.ok?.() !== false)
+                close()
+        }
+        const cancel = () => {
+            context.emit('cancel')
+            close()
+        }
+        return {
+            close,
+            onClickOverlay,
+            ok,
+            cancel
+        }
     }
-}
+};
 </script>
 
 <style lang="scss">
@@ -81,14 +126,14 @@ $border-color: #d9d9d9;
 
         &::before,
         &::after {
-            content: '';
+            content: "";
             position: absolute;
             height: 1px;
             background: black;
             width: 100%;
             top: 50%;
             left: 50%;
-            border: 1px solid
+            border: 1px solid;
         }
 
         &::before {
