@@ -12,14 +12,22 @@
 
     </template>
 </Dialog>
+<div>
+    <h1>示例2-动态挂在节点</h1>
+    <Button @click="showDialog">show</Button>
+</div>
 </template>
 
 <script lang="ts">
 import Dialog from "../lib/Dialog.vue";
 import Button from "../lib/Button.vue";
 import {
-    ref
+    ref,
+    h
 } from "vue";
+import {
+    openDialog
+} from "../lib/openDialog"
 export default {
     components: {
         Dialog,
@@ -34,12 +42,26 @@ export default {
             return true
         }
         const f2 = () => {}
+        const showDialog = () => {
+            openDialog({
+                title: '标题',
+                content: '你好',
+                ok() {
+                    console.log('ok')
+                },
+                cancel() {
+                    console.log('cancel')
+                },
+                closeOnClickOverlay: true
+            })
+        }
 
         return {
             x,
             toggle,
             f1,
-            f2
+            f2,
+            showDialog
         };
     },
 };
