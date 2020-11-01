@@ -1,6 +1,6 @@
 <template>
 <div class="gulu-tabs">
-    <div class="gulu-tabs-nav">
+    <div class="gulu-tabs-nav" ref="container">
         <div class="gulu-tabs-nav-item" @click="select(t)" v-for=" (t,index) in titles" :ref="el => { if (el) navItems[index] = el }" :class="{selected:t ===selected}" :key=" index">{{t}}
         </div>
         <div class="gulu-tabs-nav-indicator" ref="indicator"></div>
@@ -15,6 +15,7 @@
 import {
     computed,
     onMounted,
+    onUpdated,
     ref,
 
 } from 'vue'
@@ -28,20 +29,26 @@ export default {
     setup(props, context) {
         const navItems = ref < HTMLDivElement[] > ([])
         const indicator = ref < HTMLDivElement[] > (null)
-        onMounted(() => {
-            //获取 nav 中的 div 元素
+        const container = ref < HTMLDivElement > (null)
+        const x = () => {
             const divs = navItems.value
-            const result = divs.filter(div =>
-                div.classList.contains('selected')
-            )[0]
-            //获取选中 nav 的宽度
+            const result = divs.filter(div => div.classList.contains('selected'))[0]
+            console.log(result)
             const {
                 width
             } = result.getBoundingClientRect()
-
             indicator.value.style.width = width + 'px'
-
-        })
+            const {
+                left: left1
+            } = container.value.getBoundingClientRect()
+            const {
+                left: left2
+            } = result.getBoundingClientRect()
+            const left = left2 - left1
+            indicator.value.style.left = left + 'px'
+        }
+        onMounted(x)
+        onUpdated(x)
         //获取子组件对象集合
         const defaults = context.slots.default()
         defaults.forEach((tab) => {
@@ -67,7 +74,8 @@ export default {
             current,
             select,
             indicator,
-            navItems
+            navItems,
+            container
         }
     }
 
@@ -107,6 +115,7 @@ $border-color: #d9d9d9;
             left: 0;
             bottom: -1px;
             width: 100px;
+            transition: all 250ms;
         }
     }
 
