@@ -1,8 +1,9 @@
 <template>
 <div class="gulu-tabs">
     <div class="gulu-tabs-nav">
-        <div class="gulu-tabs-nav-item" @click="select(t)" :class="{selected:t ===selected}" v-for="(t,index) in titles" :key="index">{{t}}</div>
-        <div class="gulu-tabs-nav-indicator"></div>
+        <div class="gulu-tabs-nav-item" @click="select(t)" v-for=" (t,index) in titles" :ref="el => { if (el) navItems[index] = el }" :class="{selected:t ===selected}" :key=" index">{{t}}
+        </div>
+        <div class="gulu-tabs-nav-indicator" ref="indicator"></div>
     </div>
     <div class="gulu-tabs-content">
         <component class="gulu-tabs-content-item" :class="{selected: c.props.title === selected}" v-for="c in defaults" :is="c" />
@@ -12,7 +13,10 @@
 
 <script lang="ts">
 import {
-    computed
+    computed,
+    onMounted,
+    ref,
+
 } from 'vue'
 import Tab from './Tab.vue'
 export default {
@@ -22,6 +26,22 @@ export default {
         }
     },
     setup(props, context) {
+        const navItems = ref < HTMLDivElement[] > ([])
+        const indicator = ref < HTMLDivElement[] > (null)
+        onMounted(() => {
+            //获取 nav 中的 div 元素
+            const divs = navItems.value
+            const result = divs.filter(div =>
+                div.classList.contains('selected')
+            )[0]
+            //获取选中 nav 的宽度
+            const {
+                width
+            } = result.getBoundingClientRect()
+
+            indicator.value.style.width = width + 'px'
+
+        })
         //获取子组件对象集合
         const defaults = context.slots.default()
         defaults.forEach((tab) => {
@@ -45,7 +65,9 @@ export default {
             defaults,
             titles,
             current,
-            select
+            select,
+            indicator,
+            navItems
         }
     }
 
