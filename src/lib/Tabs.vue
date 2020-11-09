@@ -15,6 +15,7 @@ import {
     computed,
     onMounted,
     onUpdated,
+    watchEffect,
     ref,
 
 } from 'vue'
@@ -29,25 +30,25 @@ export default {
         const selectedItem = ref < HTMLDivElement > (null)
         const indicator = ref < HTMLDivElement[] > (null)
         const container = ref < HTMLDivElement > (null)
-        const x = () => {
+        onMounted(() => {
+            watchEffect(() => {
+                //获取选中 nav 宽度
+                const {
+                    width
+                } = selectedItem.value.getBoundingClientRect()
+                //动态设置下划线 width
+                indicator.value.style.width = width + 'px'
+                const {
+                    left: left1
+                } = container.value.getBoundingClientRect()
+                const {
+                    left: left2
+                } = selectedItem.value.getBoundingClientRect()
+                const left = left2 - left1
+                indicator.value.style.left = left + 'px'
+            })
+        })
 
-            //获取选中 nav 宽度
-            const {
-                width
-            } = selectedItem.value.getBoundingClientRect()
-            //动态设置下划线 width
-            indicator.value.style.width = width + 'px'
-            const {
-                left: left1
-            } = container.value.getBoundingClientRect()
-            const {
-                left: left2
-            } = selectedItem.value.getBoundingClientRect()
-            const left = left2 - left1
-            indicator.value.style.left = left + 'px'
-        }
-        onMounted(x)
-        onUpdated(x)
         //获取子组件对象集合
         const defaults = context.slots.default()
         defaults.forEach((tab) => {
