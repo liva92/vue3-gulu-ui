@@ -5,7 +5,7 @@
         <div class="gulu-tabs-nav-indicator" ref="indicator"></div>
     </div>
     <div class="gulu-tabs-content">
-        <component class="gulu-tabs-content-item" :class="{selected: c.props.title === selected}" v-for="c in defaults" :is="c" />
+        <component :is='current' :key="current.props.title" />
     </div>
 </div>
 </template>
@@ -114,21 +114,12 @@ $border-color: #d9d9d9;
             background: $blue;
             left: 0;
             bottom: -1px;
-            width: 100px;
             transition: all 250ms;
         }
     }
 
     &-content {
         padding: 8px 0;
-
-        &-item {
-            display: none;
-
-            &.selected {
-                display: block;
-            }
-        }
     }
 
 }
